@@ -106,10 +106,8 @@ with open(target, 'r') as f:
 
     plt.savefig("./wip/graph.png", dpi=300)
     #plt.show()
-    import numpy as np
-    from networkx_viewer import Viewer
-    app = Viewer(G, home_node='start', levels=4)
-    app.show()
+    
+    
 # with Diagram("Web Service", './wip/output', show=True, direction="TB"):
 #     pivot_node = Python("start")
 #     pivot = 'start'
