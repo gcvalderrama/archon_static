@@ -18,8 +18,10 @@ def get_kind(item):
 
 
 def register_node(G, current_key, item, kind):
-    G.add_node(current_key, label=item['name'],
-               file=item['file'], line=item['line'], kind=kind)
+    file = item['file'].replace(':', ' ')
+    name = item['name'].replace(':', ' ')
+    G.add_node(current_key, label=name,
+               file=file, line=item['line'], kind=kind)
 
 
 target_dir = 'E:/github/beagle-roe'
@@ -55,7 +57,7 @@ with open(target, 'r') as f:
             for item in data:
                 item['file'] = item['file'].replace(
                     'E:\\github\\beagle-roe\\app\\', '')
-                current_key = '{}:{}'.format(item['file'], item['name'])
+                current_key = '{} {}'.format(item['file'], item['name'])
                 kind = get_kind(item)
                 if kind == 'module':
                     continue
@@ -74,16 +76,22 @@ with open(target, 'r') as f:
 
     import matplotlib.pyplot as plt
 
-    pos = nx.planar_layout(G)
+
+    
+    #pos = nx.nx_pydot.graphviz_layout(G, prog='dot')
+    pos = nx.nx_pydot.graphviz_layout(G, prog='dot')
+    #pos = nx.spring_layout(G,scale=4)
+    #pos = nx.nx_agraph.graphviz_layout(G)
     x = G.nodes()
     edges = G.edges()
 
     weight = [G.edges[e]['weight'] if G.edges[e]
               ['weight'] < 100 else 100 for e in edges]
-    weight = [w / 5 for w in weight]
+    weight = [w / 10 for w in weight]
 
-    labels = {n: n for n, lab in G.nodes.items() if n in pos}
+    labels = {n: '{} {} {}'.format( lab['file'], lab['label'], lab['line'] ) for n, lab in G.nodes.items() if n in pos}
 
+    plt.figure(figsize=(20,14))
     nx.draw_networkx_labels(G, pos, labels=labels)
     nx.draw_networkx_edge_labels(
         G, pos, edge_labels=nx.get_edge_attributes(G, 'weight'))
@@ -94,14 +102,18 @@ with open(target, 'r') as f:
                            alpha=0.5,
                            label='data',
                            edge_color='green',
-                           style='dashed')
+                           style='dashed' )
 
-    # plt.show()
-
-with Diagram("Web Service", './wip/output', show=True, direction="LR"):
-    pivot_node = Python("start")
-    pivot = 'start'
-    for edge in G.edges():
-        if edge[0] == pivot:
-            tt = '{} : {}'.format(G.nodes[edge[1]]['file'], G.nodes[edge[1]]['label'])
-            pivot_node >> Python(tt)            
+    plt.savefig("./wip/graph.png", dpi=300)
+    #plt.show()
+    import numpy as np
+    from networkx_viewer import Viewer
+    app = Viewer(G, home_node='start', levels=4)
+    app.show()
+# with Diagram("Web Service", './wip/output', show=True, direction="TB"):
+#     pivot_node = Python("start")
+#     pivot = 'start'
+#     for edge in G.edges():
+#         if edge[0] == pivot:
+#             tt = '{} : {}'.format(G.nodes[edge[1]]['file'], G.nodes[edge[1]]['label'])
+#             pivot_node >> Python(tt)            

@@ -8,6 +8,8 @@ diagrams = "*"
 networkx = "*"
 matplotlib = "*"
 scipy = "*"
+pydot = "*"
+numpy = "*"
 
 [dev-packages]
 autopep8 = "*"
